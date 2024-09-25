@@ -1,18 +1,23 @@
+using integrador_cat_api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
+builder.Services.AddHttpClient<ICatService, CatService>();
+builder.Services.AddSingleton<ICatService, CatService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-/*if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}*/
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
