@@ -1,4 +1,5 @@
-﻿using integrador_cat_api.Models;
+﻿using Datadog.Trace;
+using integrador_cat_api.Models;
 using integrador_cat_api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,11 @@ namespace integrador_cat_api.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Cat>> GetAll()
         {
-            return Ok(_catService.GetAll());
+            using (var scope = Tracer.Instance.StartActive("getallcats.endpoint"))
+            {
+                var cats = _catService.GetAll();
+                return Ok(cats);
+            }
         }
 
         [HttpGet("{id}")]

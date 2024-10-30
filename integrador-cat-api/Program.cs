@@ -1,6 +1,15 @@
 using integrador_cat_api.Services;
+using Datadog.Trace;
+using Datadog.Trace.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+Tracer.Configure(new TracerSettings
+{
+    ServiceName = "integrador-cat-api",
+    Environment = "production"
+});
 
 
 builder.Services.AddControllers();
