@@ -12,7 +12,7 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-      - name: check code
+      - name: check out code
         uses: actions/checkout@v3
 
       - name: set up .NET
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     if: success()
     steps:
-      - name: check code
+      - name: check out code
         uses: actions/checkout@v3
 
       - name: login to docker hub
@@ -49,9 +49,15 @@ jobs:
     needs: docker-publish
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Production
+      - name: deploy to production
+        env:
+          DD_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         run: |
-          # example
+          export DD_SERVICE="integrador-cat-api"
+          export DD_ENV="production"
+          export DD_VERSION="${{ github.sha }}"
+          export DD_TRACE_ENABLED=true
+
+          # SSH into server and pull image 
           echo "Deploying to production server"
-          # SSH into server and pull docker image
-          #ssh user@your-server "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }} && docker run -d --rm -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }}"
+          # ssh user@your-server "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }} && docker run -d --rm -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }}"
