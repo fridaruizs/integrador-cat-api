@@ -44,3 +44,14 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }} .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }}
+
+  deploy:
+    needs: docker-publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Production
+        run: |
+          # example
+          echo "Deploying to production server"
+          # SSH into server and pull docker image
+          #ssh user@your-server "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }} && docker run -d --rm -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }}"
