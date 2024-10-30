@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check code
+        uses: actions/checkout@v3
+
+      - name: set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: restore dependencies
+        run: dotnet restore
+
+      - name: build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: run tests
+        run: dotnet test --configuration Release --no-build
+
+  docker-publish:
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: check code
+        uses: actions/checkout@v3
+
+      - name: login to docker hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: build and push image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/integrador-cat-api:${{ github.sha }}
